@@ -81,21 +81,34 @@ async def edit_user_balance(user_id: int, edit_summ: str):
 
 
 async def add_files(message):
+    global type_, file_url
     if message.content_type == "audio":
         file_id = message.audio.file_id
         file_url = await generate_file_url()
         type_ = "audio"
         file_name = message.audio.file_name
-        await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
-                        (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        user = await select_db("*", "users", f"user_id = {message.from_user.id}")
+        if user != []:
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        else:
+            await add_user(message.from_user.id, message.from_user.username)
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
         caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
     elif message.content_type == "document":
         file_id = message.document.file_id
         file_name = message.document.file_name
         file_url = await generate_file_url()
         type_ = "document"
-        await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
-                        (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        user = await select_db("*", "users", f"user_id = {message.from_user.id}")
+        if user != []:
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        else:
+            await add_user(message.from_user.id, message.from_user.username)
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
         caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
     elif message.content_type == "photo":
         file_id = message.photo[0].file_id
@@ -103,16 +116,28 @@ async def add_files(message):
         amount_photo = await select_db("*", "files", f"type = 'photo' AND user_id = {message.from_user.id}")
         file_name = "photo " + str(len(amount_photo) + 1)
         type_ = "photo"
-        await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
-                        (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        user = await select_db("*", "users", f"user_id = {message.from_user.id}")
+        if user != []:
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        else:
+            await add_user(message.from_user.id, message.from_user.username)
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
         caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
     elif message.content_type == "video":
         file_id = message.video.file_id
         file_name = message.video.file_name
         file_url = await generate_file_url()
         type_ = "video"
-        await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
-                        (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        user = await select_db("*", "users", f"user_id = {message.from_user.id}")
+        if user != []:
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
+        else:
+            await add_user(message.from_user.id, message.from_user.username)
+            await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
+                            (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
         caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
     else:
         caption = "Непотдерживаемый формат! Обратитесь к @csb_support_bot"
