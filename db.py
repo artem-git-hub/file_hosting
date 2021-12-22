@@ -21,6 +21,7 @@ async def select_db(whatis="*", fromis="users", whereis=''):
         print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке select -----------\n\n\n\nЗапрос:\n\n")
         print("""SELECT {} FROM {} WHERE {} ORDER BY id ASC;""".format(whatis, fromis, whereis))
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
+        return []
 
 
 async def insert_db(name_table, column, values):
@@ -35,6 +36,7 @@ async def insert_db(name_table, column, values):
         print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке insert -----------\n\n\n\nЗапрос:\n\n")
         print(f"""-- INSERT INTO {name_table} {column} VALUES{values};""")
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
+        return []
 
 async def delete_db(name_table, where):
     try:
@@ -46,6 +48,7 @@ async def delete_db(name_table, where):
         print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке delete -----------\n\n\n\nЗапрос:\n\n")
         print(f"""-- DELETE FROM {name_table} WHERE {where};""")
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
+        return []
 
 
 async def update_db(name_table, column, value, whereis):
@@ -58,3 +61,4 @@ async def update_db(name_table, column, value, whereis):
         print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке update -----------\n\n\n\nЗапрос:\n\n")
         print(f"""UPDATE {name_table} SET {column} = {value} WHERE {whereis};""")
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
+        return []
