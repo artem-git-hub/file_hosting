@@ -59,7 +59,7 @@ async def send_file(user_id, file_url):
             await bot.send_video(user_id, file_id, caption=caption, parse_mode="html")
 
     data_about_click = await select_db('*', "files_click", f"user_id = {user_id} AND file_url = '{file_url}'")
-    if data_about_file[0][1] != data_about_click[0][1]:
+    if data_about_file[0][1] != user_id:
         if data_about_click == []:
             await insert_db("files_click", ("user_id", "file_url", "amount", "first_time", "last_time"),
                             (user_id, file_url, 1, int(time.time()), int(time.time())))
