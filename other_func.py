@@ -4,7 +4,7 @@ import keyboards as k
 from aiogram import Bot
 
 import bot
-from config import TOKEN
+from config import *
 from db import *
 import uuid
 
@@ -28,7 +28,9 @@ async def send_file(user_id, file_url):
     file_id = data_about_file[0][3]
     type_ = data_about_file[0][2]
     description = data_about_file[0][5]
-    caption = f"<i>Название:</i> <code>{data_about_file[0][7]}</code>\n\n<i>Описание: </i><code>{description}</code>"
+    caption = f"<i>Название:</i> <code>{data_about_file[0][7]}</code>"#\n\n<i>Описание: </i><code>{description}</code>"
+    if description != "":
+        caption += f"\n\n<i>Описание: </i><code>{description}</code>"
     # bot.file["caption"] = caption
     if int(user_id) == int(data_about_file[0][1]):
         all_about_file = await select_db("amount", "files_click", f"file_url = '{file_url}'")
@@ -36,7 +38,7 @@ async def send_file(user_id, file_url):
         all_click = 0
         for code in all_about_file:
             all_click += int(code[0])
-        text = f"\n\nПубличная ссылка: t.me/csb_files_bot?start={data_about_file[0][4]}\n\n<i>Все скачивания: </i><code>{all_click}</code>\n<i>Уникальные скачивания:</i> <code>{uniq_click}</code>"
+        text = f"\n\nПубличная ссылка: t.me/{bot_username}?start={data_about_file[0][4]}\n\n<i>Все скачивания: </i><code>{all_click}</code>\n<i>Уникальные скачивания:</i> <code>{uniq_click}</code>"
         caption += text
         if type_ == "audio":
             await bot.send_audio(user_id, file_id, caption=caption, reply_markup=await k.edit_file(), parse_mode="html")
@@ -57,16 +59,17 @@ async def send_file(user_id, file_url):
             await bot.send_video(user_id, file_id, caption=caption, parse_mode="html")
 
     data_about_click = await select_db('*', "files_click", f"user_id = {user_id} AND file_url = '{file_url}'")
-    if data_about_click == []:
-        await insert_db("files_click", ("user_id", "file_url", "amount", "first_time", "last_time"),
-                        (user_id, file_url, 1, int(time.time()), int(time.time())))
-    else:
-        # data_about_click = await select_db("*", "files_click", f"user_id = {user_id} AND file_url = '{file_url}'")
-        amount = int(data_about_click[0][3])
-        await update_db("files_click", 'amount', amount + 1,
-                        f"user_id = {user_id} AND file_url = '{file_url}'")
-        await update_db("files_click", 'last_time', int(time.time()),
-                        f"user_id = {user_id} AND file_url = '{file_url}'")
+    if data_about_file[0][1] != data_about_click[0][1]:
+        if data_about_click == []:
+            await insert_db("files_click", ("user_id", "file_url", "amount", "first_time", "last_time"),
+                            (user_id, file_url, 1, int(time.time()), int(time.time())))
+        else:
+            # data_about_click = await select_db("*", "files_click", f"user_id = {user_id} AND file_url = '{file_url}'")
+            amount = int(data_about_click[0][3])
+            await update_db("files_click", 'amount', amount + 1,
+                            f"user_id = {user_id} AND file_url = '{file_url}'")
+            await update_db("files_click", 'last_time', int(time.time()),
+                            f"user_id = {user_id} AND file_url = '{file_url}'")
 
 
 async def edit_message(chat_id, message_id, text, reply_markup):
@@ -95,7 +98,7 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
+        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     elif message.content_type == "document":
         file_id = message.document.file_id
         file_name = message.document.file_name
@@ -109,7 +112,7 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
+        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     elif message.content_type == "photo":
         file_id = message.photo[0].file_id
         file_url = await generate_file_url()
@@ -124,7 +127,7 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
+        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     elif message.content_type == "video":
         file_id = message.video.file_id
         file_name = message.video.file_name
@@ -138,7 +141,7 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/csb_files_bot?start={file_url}"
+        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     else:
         caption = "Непотдерживаемый формат! Обратитесь к @csb_support_bot"
     return [caption, file_url, type_]

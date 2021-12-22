@@ -9,8 +9,7 @@ import random
 import other_func as of
 from datetime import datetime
 
-from config import TOKEN
-
+from config import *
 bot = Bot(token=TOKEN)
 dp = Dispatcher(bot)
 
@@ -50,11 +49,11 @@ async def process_start_command(message: types.Message):
     files_data = await select_db("*", "files", f"user_id = {message.from_user.id}")
     caption = "Это все твои файлы\n\n"
     for i in files_data:
-        text = f"<a href='https://t.me/csb_files_bot?start={i[4]}'>{i[7]}</a>\n\n"
+        text = f"<a href='https://t.me/{bot_username}?start={i[4]}'>{i[7]}</a>\n\n"
         caption += text
     if caption == "Это все твои файлы\n\n":
         caption = "У тебя нет загруженых файлов"
-    await bot.send_message(message.from_user.id, caption, parse_mode="html")
+    await bot.send_message(message.from_user.id, caption, parse_mode="html", disable_web_page_preview=True)
 
 @dp.message_handler(commands=['help'])
 async def process_start_command(message: types.Message):
@@ -75,9 +74,9 @@ async def callback_inline(call):
             files_data = await select_db("*", "files", f"user_id = {call.message.chat.id}")
             caption = "Это все твои файлы\n\n"
             for i in files_data:
-                text = f"<a href='https://t.me/csb_files_bot?start={i[4]}'>{i[7]}</a>\n\n"
+                text = f"<a href='https://t.me/{bot_username}?start={i[4]}'>{i[7]}</a>\n\n"
                 caption += text
-            await bot.send_message(call.message.chat.id, caption, parse_mode="html")
+            await bot.send_message(call.message.chat.id, caption, parse_mode="html", disable_web_page_preview=True)
         elif call.data == "add_description":
             action = "add_description"
             caption = "Отправь мне описание"
@@ -90,13 +89,15 @@ async def callback_inline(call):
             file_url = file["url"]
             data_about_file = await select_db("*", "files", f"file_url = '{file_url}'")
             description = data_about_file[0][5]
-            caption = f"<i>Название:</i> <code>{data_about_file[0][7]}</code>\n\n<i>Описание: </i><code>{description}</code>"
+            caption = f"<i>Название:</i> <code>{data_about_file[0][7]}</code>"#\n\n<i>Описание: </i><code>{description}</code>"
+            if description != "":
+                caption += f"\n\n<i>Описание: </i><code>{description}</code>"
             all_about_file = await select_db("amount", "files_click", f"file_url = '{file_url}'")
             uniq_click = len(all_about_file)
             all_click = 0
             for code in all_about_file:
                 all_click += int(code[0])
-            caption += f"\n\nПубличная ссылка: t.me/csb_files_bot?start={file_url}\n\n<i>Все скачивания: </i><code>{all_click}</code>\n<i>Уникальные скачивания:</i> <code>{uniq_click}</code>"
+            caption += f"\n\nПубличная ссылка: t.me/{bot_username}?start={file_url}\n\n<i>Все скачивания: </i><code>{all_click}</code>\n<i>Уникальные скачивания:</i> <code>{uniq_click}</code>"
             try:
                 await bot.edit_message_caption(chat_id=call.message.chat.id, message_id=call.message.message_id, caption=caption, parse_mode="html", reply_markup=await k.edit_file())
             except:
@@ -109,7 +110,7 @@ async def callback_inline(call):
             files_data = await select_db("*", "files", f"user_id = {call.message.chat.id}")
             caption = "Это все твои файлы\n\n"
             for i in files_data:
-                text = f"<a href='https://t.me/csb_files_bot?start={i[4]}'>{i[7]}</a>\n\n"
+                text = f"<a href='https://t.me/{bot_username}?start={i[4]}'>{i[7]}</a>\n\n"
                 caption += text
             await bot.send_message(call.message.chat.id, caption, parse_mode="html")
     except IndexError:
