@@ -32,13 +32,13 @@ async def insert_db(name_table, column, values):
         column = str(column).replace("'", "")
         # print(f"""INSERT INTO {name_table} {column} VALUES{value>
         cursor.execute(
-            f"""INSERT INTO {name_table} {column} VALUES{values};">
+            f"""INSERT INTO {name_table} {column} VALUES{values};"""
         )
         db.commit()
     except Exception as e:
-        print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++>
-        print(f"""INSERT INTO {name_table} {column} VALUES{values}>
-        print(f"ОШИБКА: \n\n{e}\n\n\n_____________________________>
+        print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ++++++++++++++++++++++++")
+        print(f"""INSERT INTO {name_table} {column} VALUES{values}""")
+        print(f"ОШИБКА: \n\n{e}\n\n\n_____________________________")
         return []
 
     
