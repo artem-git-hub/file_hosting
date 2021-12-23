@@ -23,21 +23,25 @@ async def select_db(whatis="*", fromis="users", whereis=''):
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
         return []
 
-
 async def insert_db(name_table, column, values):
     try:
+        if None in values:
+            val = list(values)
+            val[val.index(None)] = ""
+            values = tuple(val)
         column = str(column).replace("'", "")
-        # print(f"""-- INSERT INTO {name_table} {column} VALUES{values};""")
+        # print(f"""INSERT INTO {name_table} {column} VALUES{value>
         cursor.execute(
-            f"""INSERT INTO {name_table} {column} VALUES{values};"""
+            f"""INSERT INTO {name_table} {column} VALUES{values};">
         )
         db.commit()
     except Exception as e:
-        print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке insert -----------\n\n\n\nЗапрос:\n\n")
-        print(f"""-- INSERT INTO {name_table} {column} VALUES{values};""")
-        print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
+        print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++>
+        print(f"""INSERT INTO {name_table} {column} VALUES{values}>
+        print(f"ОШИБКА: \n\n{e}\n\n\n_____________________________>
         return []
 
+    
 async def delete_db(name_table, where):
     try:
         # print(f"""-- DELETE FROM {name_table} WHERE {where};""")
