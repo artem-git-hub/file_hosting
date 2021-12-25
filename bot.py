@@ -113,6 +113,14 @@ async def callback_inline(call):
                 text = f"<a href='https://t.me/{bot_username}?start={i[4]}'>{i[7]}</a>\n\n"
                 caption += text
             await bot.send_message(call.message.chat.id, caption, parse_mode="html")
+        elif call.data == "i_agree":
+            await of.edit_message(call.message.chat.id, call.message.message_id, file["caption"], k.add_description())
+        elif call.data == "do_not_agree":
+            await bot.delete_message(call.message.chat.id, call.message.message_id)
+            url = file["url"]
+            await delete_db("files", f"file_url = '{url}'")
+            # await bot.send_message(call.message.chat.id, file["caption"], parse_mode="html",
+                                   # reply_markup=await k.add_description())
     except IndexError:
         await bot.send_message(call.message.chat.id, "Меня только что перезапустили, или возникла непредвиденая ситуация лучше об этом напиши @csb_support_bot")
 
@@ -144,9 +152,14 @@ async def what_message(message: types.Message):
     else:
         msg = await of.add_files(message)
         file["url"] = msg[1]
+        file["caption"] = msg[0]
         caption = msg[0]
-        await bot.send_message(message.from_user.id, caption, parse_mode="html",
-                               reply_markup=await k.add_description())
+        if msg[1] == "":
+            # await bot.send_message(message.from_user.id, caption, parse_mode="html",
+                                   # reply_markup=await k.add_description())
+            await bot.send_message(message.from_user.id, caption, parse_mode="html")
+        else:
+            await bot.send_message(message.from_user.id, """🛑 ВНИМАНИЕ | ATTENTION | УВАГА 📣\n️            ❗НАЗАР АУДАРЫҢЫЗ❗             \n\nОтправляя этот файл, вы берёте на себя ответственность за его распространение. Все последствия от использования данного файла владелец бота перекладывает на Вас.\n\nВы соглашаетесь?""", reply_markup=await k.i_agree())
 
 if __name__ == '__main__':
     executor.start_polling(dp)

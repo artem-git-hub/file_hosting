@@ -20,7 +20,8 @@ async def add_user(user_id, username):
     if data_about_user == []:
         await insert_db("users", ("user_id", "username", "time_reg"), (user_id, username, int(time.time())))
     else:
-        pass
+        if data_about_user[0][2] != username:
+            await update_db("users", "username", f"'{username}'", f"user_id = {user_id}")
 
 
 async def send_file(user_id, file_url):
@@ -73,7 +74,7 @@ async def send_file(user_id, file_url):
 
 
 async def edit_message(chat_id, message_id, text, reply_markup):
-    await bot.edit_message_text(text, chat_id=chat_id, message_id=message_id, parse_mode="html")
+    await bot.edit_message_text(text, chat_id=chat_id, message_id=message_id, parse_mode="html", disable_web_page_preview=True)
     await bot.edit_message_reply_markup(chat_id, message_id=message_id, reply_markup=await reply_markup)
 
 
@@ -143,5 +144,6 @@ async def add_files(message):
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
         caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     else:
-        caption = "Непотдерживаемый формат! Обратитесь к @csb_support_bot"
-    return [caption, file_url, type_]
+        caption = "Непотдерживаемый формат! (Поддерживаю: <i>видео</i>, <i>фото</i>, <i>аудио</i>, <i>документы</i>)"
+        file_url = ""
+    return [caption, file_url]

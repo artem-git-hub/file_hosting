@@ -35,3 +35,12 @@ async def pass_but():
     add = InlineKeyboardButton("", callback_data="pass")
     edit_file.row(add)
     return edit_file
+
+
+async def i_agree():
+    i_agree = InlineKeyboardMarkup(row_width=1)
+    yes = InlineKeyboardButton("🟩        I agree | я согласен(а)        🟩", callback_data="i_agree")
+    no = InlineKeyboardButton("🟥  I disagree | я не согласен(а)  🟥", callback_data="do_not_agree")
+    i_agree.row(no)
+    i_agree.row(yes)
+    return i_agree
