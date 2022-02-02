@@ -1,5 +1,5 @@
-import psycopg2
 from config import *
+
 db = psycopg2.connect(
     host=host,
     user=user,
@@ -27,10 +27,12 @@ async def select_db(whatis="*", fromis="users", whereis=''):
             database=db_name
         )
         cursor = db.cursor()
-        print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке select -----------\n\n\n\nЗапрос:\n\n")
+        print(
+            "+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке select -----------\n\n\n\nЗапрос:\n\n")
         print("""SELECT {} FROM {} WHERE {} ORDER BY id ASC;""".format(whatis, fromis, whereis))
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
         return []
+
 
 async def insert_db(name_table, column, values):
     global db, cursor
@@ -59,7 +61,7 @@ async def insert_db(name_table, column, values):
         print(f"ОШИБКА: \n\n{e}\n\n\n_____________________________")
         return []
 
-    
+
 async def delete_db(name_table, where):
     global db, cursor
     try:
@@ -76,7 +78,8 @@ async def delete_db(name_table, where):
             database=db_name
         )
         cursor = db.cursor()
-        print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке delete -----------\n\n\n\nЗапрос:\n\n")
+        print(
+            "+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке delete -----------\n\n\n\nЗапрос:\n\n")
         print(f"""-- DELETE FROM {name_table} WHERE {where};""")
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
         return []
@@ -85,7 +88,10 @@ async def delete_db(name_table, where):
 async def update_db(name_table, column, value, whereis):
     global db, cursor
     try:
-        # print(f"""UPDATE {name_table} SET {column} = {value} WHERE {whereis};""")
+
+        if value == None or value == "None" or "None" in value:
+            value = "''"
+        # print(f"""-- UPDATE {name_table} SET {column} = {value} WHERE {whereis};""", "  ----------   ", value)
         cursor.execute(
             f"""UPDATE {name_table} SET {column} = {value} WHERE {whereis};""")
         db.commit()
@@ -98,7 +104,8 @@ async def update_db(name_table, column, value, whereis):
             database=db_name
         )
         cursor = db.cursor()
-        print("+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке update -----------\n\n\n\nЗапрос:\n\n")
+        print(
+            "+++++++++++++++++++++++++++ОТЧЁТ ОБ ОШИБКЕ+++++++++++++++++\n\n--------------Ошибка в блоке update -----------\n\n\n\nЗапрос:\n\n")
         print(f"""UPDATE {name_table} SET {column} = {value} WHERE {whereis};""")
         print(f"ОШИБКА: \n\n{e}\n\n\n_______________________________КОНЕЦ ОТЧЁТА __________________________________")
         return []

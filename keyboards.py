@@ -16,7 +16,6 @@ async def add_description():
     return add_description
 
 
-
 async def edit_file():
     edit_file = InlineKeyboardMarkup(row_width=1)
     add = InlineKeyboardButton("Изменить описание", callback_data="add_description")
@@ -29,6 +28,7 @@ async def edit_file():
     edit_file.row(my_files)
     edit_file.row(delete, reload)
     return edit_file
+
 
 async def pass_but():
     edit_file = InlineKeyboardMarkup(row_width=1)
@@ -44,3 +44,17 @@ async def i_agree():
     i_agree.row(no)
     i_agree.row(yes)
     return i_agree
+
+
+async def but_for_add(text, link, with_confirm=False):
+    but_for_add = InlineKeyboardMarkup(row_width=1)
+    for i in range(0, len(text)):
+        button = InlineKeyboardButton(text=text[i], url=link[i])
+        but_for_add.row(button)
+
+    delete_msg = InlineKeyboardButton("Удалить", callback_data="delete_msg")
+    but_for_add.add(delete_msg)
+    if with_confirm:
+        confirm = InlineKeyboardButton(" - Подтверждаю - ", callback_data="confirm")
+        but_for_add.add(confirm)
+    return but_for_add

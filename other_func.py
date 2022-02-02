@@ -1,12 +1,11 @@
-import random
 import time
-import keyboards as k
+import uuid
+
 from aiogram import Bot
 
 import bot
-from config import *
+import keyboards as k
 from db import *
-import uuid
 
 bot = Bot(token=TOKEN)
 
@@ -29,7 +28,7 @@ async def send_file(user_id, file_url):
     file_id = data_about_file[0][3]
     type_ = data_about_file[0][2]
     description = data_about_file[0][5]
-    caption = f"<i>Название:</i> <code>{data_about_file[0][7]}</code>"#\n\n<i>Описание: </i><code>{description}</code>"
+    caption = f"<i>Название:</i> <code>{data_about_file[0][7]}</code>"  # \n\n<i>Описание: </i><code>{description}</code>"
     if description != "":
         caption += f"\n\n<i>Описание: </i><code>{description}</code>"
     # bot.file["caption"] = caption
@@ -44,7 +43,8 @@ async def send_file(user_id, file_url):
         if type_ == "audio":
             await bot.send_audio(user_id, file_id, caption=caption, reply_markup=await k.edit_file(), parse_mode="html")
         elif type_ == "document":
-            await bot.send_document(user_id, file_id, caption=caption, reply_markup=await k.edit_file(), parse_mode="html")
+            await bot.send_document(user_id, file_id, caption=caption, reply_markup=await k.edit_file(),
+                                    parse_mode="html")
         elif type_ == "photo":
             await bot.send_photo(user_id, file_id, caption=caption, reply_markup=await k.edit_file(), parse_mode="html")
         elif type_ == "video":
@@ -74,7 +74,8 @@ async def send_file(user_id, file_url):
 
 
 async def edit_message(chat_id, message_id, text, reply_markup):
-    await bot.edit_message_text(text, chat_id=chat_id, message_id=message_id, parse_mode="html", disable_web_page_preview=True)
+    await bot.edit_message_text(text, chat_id=chat_id, message_id=message_id, parse_mode="html",
+                                disable_web_page_preview=True)
     await bot.edit_message_reply_markup(chat_id, message_id=message_id, reply_markup=await reply_markup)
 
 
