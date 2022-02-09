@@ -95,6 +95,7 @@ async def edit_user_balance(user_id: int, edit_summ: str):
 
 
 async def add_files(message, bms):
+    file_name = ""
     global type_, file_url
     if message.content_type == "audio":
         file_id = message.audio.file_id
