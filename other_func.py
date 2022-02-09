@@ -23,14 +23,14 @@ async def add_user(user_id, username):
             await update_db("users", "username", f"'{username}'", f"user_id = {user_id}")
 
 
-async def send_file(user_id, file_url):
+async def send_file(user_id, file_url, bms):
     data_about_file = await select_db("*", "files", f"file_url = '{file_url}'")
     file_id = data_about_file[0][3]
     type_ = data_about_file[0][2]
     description = data_about_file[0][5]
-    caption = f"<i>Название:</i> <code>{data_about_file[0][7]}</code>"  # \n\n<i>Описание: </i><code>{description}</code>"
+    caption = f"<i>{bms.name}:</i> <code>{data_about_file[0][7]}</code>"  # \n\n<i>Описание: </i><code>{description}</code>"
     if description != "":
-        caption += f"\n\n<i>Описание: </i><code>{description}</code>"
+        caption += f"\n\n<i>{bms.discription}: </i><code>{description}</code>"
     # bot.file["caption"] = caption
     if int(user_id) == int(data_about_file[0][1]):
         all_about_file = await select_db("amount", "files_click", f"file_url = '{file_url}'")
@@ -38,17 +38,26 @@ async def send_file(user_id, file_url):
         all_click = 0
         for code in all_about_file:
             all_click += int(code[0])
-        text = f"\n\nПубличная ссылка: t.me/{bot_username}?start={data_about_file[0][4]}\n\n<i>Все скачивания: </i><code>{all_click}</code>\n<i>Уникальные скачивания:</i> <code>{uniq_click}</code>"
+
+        all_data_files = bms.all_data_files.split("-----")
+        public_link = all_data_files[0]
+        all_download = all_data_files[1]
+        uniq_download = all_data_files[2]
+
+        text = f"\n\n{public_link} t.me/{bot_username}?start={data_about_file[0][4]}\n\n<i>{all_download} </i><code>{all_click}</code>\n<i>{uniq_download}</i> <code>{uniq_click}</code>"
         caption += text
         if type_ == "audio":
-            await bot.send_audio(user_id, file_id, caption=caption, reply_markup=await k.edit_file(), parse_mode="html")
+            await bot.send_audio(user_id, file_id, caption=caption, reply_markup=await k.edit_file(bms),
+                                 parse_mode="html")
         elif type_ == "document":
             await bot.send_document(user_id, file_id, caption=caption, reply_markup=await k.edit_file(),
                                     parse_mode="html")
         elif type_ == "photo":
-            await bot.send_photo(user_id, file_id, caption=caption, reply_markup=await k.edit_file(), parse_mode="html")
+            await bot.send_photo(user_id, file_id, caption=caption, reply_markup=await k.edit_file(bms),
+                                 parse_mode="html")
         elif type_ == "video":
-            await bot.send_video(user_id, file_id, caption=caption, reply_markup=await k.edit_file(), parse_mode="html")
+            await bot.send_video(user_id, file_id, caption=caption, reply_markup=await k.edit_file(bms),
+                                 parse_mode="html")
     else:
         if type_ == "audio":
             await bot.send_audio(user_id, file_id, caption=caption, parse_mode="html")
@@ -85,7 +94,7 @@ async def edit_user_balance(user_id: int, edit_summ: str):
     await update_db("users", "balance", round(user_balance + float(edit_summ), 1), f"user_id = {user_id}")
 
 
-async def add_files(message):
+async def add_files(message, bms):
     global type_, file_url
     if message.content_type == "audio":
         file_id = message.audio.file_id
@@ -100,7 +109,7 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
+        # caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     elif message.content_type == "document":
         file_id = message.document.file_id
         file_name = message.document.file_name
@@ -114,7 +123,7 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
+        # caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     elif message.content_type == "photo":
         file_id = message.photo[0].file_id
         file_url = await generate_file_url()
@@ -129,7 +138,7 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
+        # caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
     elif message.content_type == "video":
         file_id = message.video.file_id
         file_name = message.video.file_name
@@ -143,8 +152,19 @@ async def add_files(message):
             await add_user(message.from_user.id, message.from_user.username)
             await insert_db("files", ("user_id", "type", "file_id", "file_url", "description", "time_add", "file_name"),
                             (message.from_user.id, type_, file_id, file_url, "", int(time.time()), file_name))
-        caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
+        # caption = f"<b>Успешно добавлено!</b>\n\nИмя файла: {file_name}\n\nОписание: - \n\nСсылка:\nhttps://t.me/{bot_username}?start={file_url}"
+
     else:
-        caption = "Непотдерживаемый формат! (Поддерживаю: <i>видео</i>, <i>фото</i>, <i>аудио</i>, <i>документы</i>)"
+        i_can_not = bms.i_can_not.split("-----")
+        unsupported_format = i_can_not[0]
+        support = i_can_not[1]
+        video = i_can_not[2]
+        photos = i_can_not[3]
+        audio = i_can_not[4]
+        documents = i_can_not[5]
+        caption = f"{unsupported_format}! ({support}: <i>{video}</i>, <i>{photos}</i>, <i>{audio}</i>, <i>{documents}</i>)"
         file_url = ""
+    all_data_files = bms.all_data_files.split("-----")
+    public_link = all_data_files[0]
+    caption = f"<b>{bms.success}!</b>\n\n{bms.name}: {file_name}\n\n{bms.discription}: - \n\n{public_link}\nhttps://t.me/{bot_username}?start={file_url}"
     return [caption, file_url]

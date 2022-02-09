@@ -88,8 +88,8 @@ async def delete_db(name_table, where):
 async def update_db(name_table, column, value, whereis):
     global db, cursor
     try:
-
-        if value == None or value == "None" or "None" in value:
+        # print(f"""name table (type) -- {name_table} - {type(name_table)}\n\n column type --- {column} - {type(column)}  = value {value} - {type(value)}\n\n WHERE type {whereis} -- {type(whereis)};\n\n\n""")
+        if (value == None or value == "None" or "None" in value) if type(value) == str else False:
             value = "''"
         # print(f"""-- UPDATE {name_table} SET {column} = {value} WHERE {whereis};""", "  ----------   ", value)
         cursor.execute(
