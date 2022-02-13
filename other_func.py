@@ -50,7 +50,7 @@ async def send_file(user_id, file_url, bms):
             await bot.send_audio(user_id, file_id, caption=caption, reply_markup=await k.edit_file(bms),
                                  parse_mode="html")
         elif type_ == "document":
-            await bot.send_document(user_id, file_id, caption=caption, reply_markup=await k.edit_file(),
+            await bot.send_document(user_id, file_id, caption=caption, reply_markup=await k.edit_file(bms),
                                     parse_mode="html")
         elif type_ == "photo":
             await bot.send_photo(user_id, file_id, caption=caption, reply_markup=await k.edit_file(bms),
